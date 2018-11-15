@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 int *y = NULL;
@@ -11,11 +12,13 @@ int *y = NULL;
 
 void main(int argc, char *argv[])
 {
+	clock_t start, end, actual;
 	char fileName[25], ch;
 	FILE *fp;
 	int linecount = 0;
 	int j = 0;
 	int x;
+	start = clock();
 	if (argc == 1)
 	{
 		printf("Enter the filename you wish to read\n");
@@ -52,4 +55,8 @@ void main(int argc, char *argv[])
 			y[j] = 10;
 	}
 	fclose(fp);
+	end = clock();
+
+	total = (double)(end - start) / CLOCKS_PER_SEC;
+	printf("This took %f seconds to run\n", total);
 }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <time.h>
 
 #define NUM_THREADS 4
 int *y = NULL;
@@ -14,12 +15,14 @@ int linecount;
 
 void main(int argc, char *argv[])
 {
+	clock_t start, end, actual;
 	char fileName[25], ch;
 	FILE *fp;
 	int j = 0;
 	int x;
 	int scope;
 	pthread_attr_t attr;
+	start = clock();
 	pthread_attr_init(&attr);
 	linecount = 0;
 	if (argc == 1)
@@ -71,6 +74,10 @@ void main(int argc, char *argv[])
 		pthread_join(tid[i], NULL);
 
 	fclose(fp);
+	end = clock();
+
+	total = (double)(end - start) / CLOCKS_PER_SEC;
+	printf("This took %f seconds to run\n", total);
 
 }
 
