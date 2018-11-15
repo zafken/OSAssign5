@@ -18,6 +18,7 @@ int *y = NULL;
 
 int main(int argc, char *argv[])
 {
+	char line[25];
 	clock_t start, end, actual;
 	char fileName[25], ch;
 	FILE *fp;
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
 	start = clock();
 	for (j = 0; j < linecount; j++)
 	{
-		x = atoi(fgets(fp));
+		x = atoi(fgets(line, 25, fp));
 		if (x == 0)
 			y[j] = 0;
 		else
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
 	fclose(fp);
 
 
-	total = (double)(end - start) / CLOCKS_PER_SEC;
+	actual = (double)(end - start) / CLOCKS_PER_SEC;
 	printf("This took %f seconds to run\n", total);
 	return 0;
 }

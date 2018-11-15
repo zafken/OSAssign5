@@ -15,6 +15,7 @@ int linecount;
 
 int main(int argc, char *argv[])
 {
+	char line[25];
 	clock_t start, end, actual;
 	char fileName[25], ch;
 	FILE *fp;
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 	numbers = (int*)malloc(linecount * sizeof(int));
 	for (j = 0; j < linecount; j++)
 	{
-		numbers[j] = atoi(fgets(fp));
+		numbers[j] = atoi(fgets(line, 25, fp));
 	}
 	if (pthread_attr_getscope(&attr, &scope) != 0)
 		fprintf(stderr, "Unable to get scheduling scope\n");
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
 	end = clock();
 	fclose(fp);
 
-	total = (double)(end - start) / CLOCKS_PER_SEC;
+	actual = (double)(end - start) / CLOCKS_PER_SEC;
 	printf("This took %f seconds to run\n", total);
 	return 0;
 
