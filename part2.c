@@ -107,5 +107,5 @@ void *algorithm(void *param)
 		else
 			y[j] = 10;
 	}
-
+	pthread_exit(0);
 }
