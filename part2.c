@@ -14,7 +14,6 @@ void main()
 	char fileName[25], ch;
 	FILE *fp;
 	int linecount = 0;
-	int MAX = 0;
 	int j = 0;
 	int x;
 	printf("Enter the filename you wish to read\n");

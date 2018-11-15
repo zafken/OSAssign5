@@ -1,20 +1,44 @@
 //part 1
 
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
 int *y = NULL;
 
 
 
 void main()
 {
-	int MAX = 50;
+	char fileName[25], ch;
+	FILE *fp;
+	int linecount = 0;
 	int j = 0;
 	int x;
-	y = (int*)malloc(MAX*sizeof(int));
+	printf("Enter the filename you wish to read\n");
+	gets(fileName);
 
-	for (j = 0; j < MAX; j++)
+	fp = fopen(fileName, "r");
+	if (fp == NULL)
 	{
-		printf("Enter an integer value: ");
-		scanf("%d", &x);
+		perror("Error while opening the file");
+		exit(EXIT_FAILURE);
+	}
+	//get size of file
+	while ((ch = fgetc(fp)) != EOF)
+	{
+		if (ch == '\n')
+		{
+			linecount++;
+		}
+	}
+
+	y = (int*)malloc(linecount * sizeof(int));
+	rewind(fp);
+	for (j = 0; j < linecount; j++)
+	{
+		x = atoi(fgets(fp));
 		if (x == 0)
 			y[j] = 0;
 		else
