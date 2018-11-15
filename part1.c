@@ -18,7 +18,6 @@ void main(int argc, char *argv[])
 	int linecount = 0;
 	int j = 0;
 	int x;
-	start = clock();
 	if (argc == 1)
 	{
 		printf("Enter the filename you wish to read\n");
@@ -46,6 +45,7 @@ void main(int argc, char *argv[])
 
 	y = (int*)malloc(linecount * sizeof(int));
 	rewind(fp);
+	start = clock();
 	for (j = 0; j < linecount; j++)
 	{
 		x = atoi(fgets(fp));
@@ -54,8 +54,9 @@ void main(int argc, char *argv[])
 		else
 			y[j] = 10;
 	}
-	fclose(fp);
 	end = clock();
+	fclose(fp);
+
 
 	total = (double)(end - start) / CLOCKS_PER_SEC;
 	printf("This took %f seconds to run\n", total);

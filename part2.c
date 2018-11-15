@@ -22,7 +22,6 @@ void main(int argc, char *argv[])
 	int x;
 	int scope;
 	pthread_attr_t attr;
-	start = clock();
 	pthread_attr_init(&attr);
 	linecount = 0;
 	if (argc == 1)
@@ -68,13 +67,13 @@ void main(int argc, char *argv[])
 			fprintf(stderr, "Illegal scope value.\n");
 	}
 	pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+	start = clock();
 	for (j = 0; j < NUM_THREADS; j++)
 		pthread_create(&tid[i], &attr, algorithm, NULL);
 	for (j = 0; j < NUM_THREADS; j++)
 		pthread_join(tid[i], NULL);
-
-	fclose(fp);
 	end = clock();
+	fclose(fp);
 
 	total = (double)(end - start) / CLOCKS_PER_SEC;
 	printf("This took %f seconds to run\n", total);
