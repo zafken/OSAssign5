@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	fclose(fp);
 
 	actual = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("This took %f seconds to run\n", total);
+	printf("This took %f seconds to run\n", actual);
 	return 0;
 
 }
