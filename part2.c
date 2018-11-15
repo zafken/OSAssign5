@@ -3,21 +3,34 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
-
+#define NUM_THREADS 4
 int *y = NULL;
+int *numbers = NULL;
+pthread_t tid[NUM_THREADS];
+int linecount;
 
 
-
-void main()
+void main(int argc, char *argv[])
 {
 	char fileName[25], ch;
 	FILE *fp;
-	int linecount = 0;
 	int j = 0;
 	int x;
-	printf("Enter the filename you wish to read\n");
-	gets(fileName);
+	int scope;
+	pthread_attr_t attr;
+	pthread_attr_init(&attr);
+	linecount = 0;
+	if (argc == 1)
+	{
+		printf("Enter the filename you wish to read\n");
+		gets(fileName);
+	}
+	else
+	{
+		fileName = argv[1];
+	}
 
 	fp = fopen(fileName, "r");
 	if (fp == NULL)
@@ -33,15 +46,66 @@ void main()
 			linecount++;
 		}
 	}
-
-	y = (int*)malloc( linecount * sizeof(int));
 	rewind(fp);
+	y = (int*)malloc(linecount * sizeof(int));
+	numbers = (int*)malloc(linecount * sizeof(int));
 	for (j = 0; j < linecount; j++)
 	{
-		x = atoi(fgets(fp));
-		if (x == 0)
+		numbers[j] = atoi(fgets(fp));
+	}
+	if (pthread_attr_getscope(&attr, &scope) != 0)
+		fprintf(stderr, "Unable to get scheduling scope\n");
+	else
+	{
+		if (scope == PTHREAD_SCOPE_PROCESS)
+			printf("PTHREAD_SCOPE_PROCESS");
+		else if (scope == PTHREAD_SCOPE_SYSTEM)
+			printf("PTHREAD_SCOPE_SYSTEM");
+		else
+			fprintf(stderr, "Illegal scope value.\n");
+	}
+	pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
+	for (j = 0; j < NUM_THREADS; j++)
+		pthread_create(&tid[i], &attr, algorithm, NULL);
+	for (j = 0; j < NUM_THREADS; j++)
+		pthread_join(tid[i], NULL);
+
+	fclose(fp);
+
+}
+
+
+void *algorithm(void *param)
+{
+	int j, MAX, MIN;
+	if (pthread_self() == tid[0])
+	{
+		MAX = linecount / 4;
+		MIN = 0;
+	}
+	else if(pthread_self() == tid[1])
+	{
+		MAX = linecount / 2;
+		MIN = linecount / 4;
+	}
+	else if (pthread_self() == tid[2])
+	{
+		MAX = (linecount * 3) / 4;
+		MIN = linecount / 2;
+	}
+	else
+	{
+		MAX = linecount;
+		MIN = (linecount * 3) / 4;
+	}
+		
+	for (j = MIN; j < MAX; j++)
+	{
+		
+		if (numbers[j] == 0)
 			y[j] = 0;
 		else
 			y[j] = 10;
 	}
+
 }

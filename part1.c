@@ -9,15 +9,22 @@ int *y = NULL;
 
 
 
-void main()
+void main(int argc, char *argv[])
 {
 	char fileName[25], ch;
 	FILE *fp;
 	int linecount = 0;
 	int j = 0;
 	int x;
-	printf("Enter the filename you wish to read\n");
-	gets(fileName);
+	if (argc == 1)
+	{
+		printf("Enter the filename you wish to read\n");
+		gets(fileName);
+	}
+	else
+	{
+		fileName = argv[1];
+	}
 
 	fp = fopen(fileName, "r");
 	if (fp == NULL)
@@ -44,4 +51,5 @@ void main()
 		else
 			y[j] = 10;
 	}
+	fclose(fp);
 }
