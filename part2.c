@@ -13,7 +13,7 @@ pthread_t tid[NUM_THREADS];
 int linecount;
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	clock_t start, end, actual;
 	char fileName[25], ch;
@@ -77,6 +77,7 @@ void main(int argc, char *argv[])
 
 	total = (double)(end - start) / CLOCKS_PER_SEC;
 	printf("This took %f seconds to run\n", total);
+	return 0;
 
 }
 
