@@ -1,3 +1,6 @@
+# Word doc
+https://jackssdstate-my.sharepoint.com/:w:/g/personal/andrew_serie_jacks_sdstate_edu/EdUcsOjmJcdOo33i8zpmOyEBTLGvCyj_gPtugejwBOK_Tg?e=U0erfG
+
 # Overview
 - Work in teams of 4
 - Do experimentation
