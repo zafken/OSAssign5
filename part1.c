@@ -15,9 +15,12 @@ Description:
 int *y = NULL;
 
 
-void main(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
-	clock_t start, end, actual;
+	char line[25];
+	clock_t start, end;
+	double actual;
 	char fileName[25], ch;
 	FILE *fp;
 	int linecount = 0;
@@ -27,13 +30,14 @@ void main(int argc, char *argv[])
 	{
 		printf("Enter the filename you wish to read\n");
 		gets(fileName);
+		fp = fopen(fileName, "r");
 	}
 	else
 	{
-		fileName = argv[1];
+		fp = fopen(argv[1], "r");
+
 	}
 
-	fp = fopen(fileName, "r");
 	if (fp == NULL)
 	{
 		perror("Error while opening the file");
@@ -53,7 +57,7 @@ void main(int argc, char *argv[])
 	start = clock();
 	for (j = 0; j < linecount; j++)
 	{
-		x = atoi(fgets(fp));
+		x = atoi(fgets(line, 25, fp));
 		if (x == 0)
 			y[j] = 0;
 		else
@@ -63,6 +67,7 @@ void main(int argc, char *argv[])
 	fclose(fp);
 
 
-	total = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("This took %f seconds to run\n", total);
+	actual = ((end - start) / (double)CLOCKS_PER_SEC) * 1000;
+	printf("This took %f milliseconds to run\n", actual);
+	return 0;
 }

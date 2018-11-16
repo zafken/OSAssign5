@@ -11,30 +11,32 @@ int *y = NULL;
 int *numbers = NULL;
 pthread_t tid[NUM_THREADS];
 int linecount;
+void *algorithm(void *param);
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	clock_t start, end, actual;
+	char line[25];
+	clock_t start, end;
+	double actual;
 	char fileName[25], ch;
 	FILE *fp;
 	int j = 0;
-	int x;
 	int scope;
 	pthread_attr_t attr;
-	pthread_attr_init(&attr);
 	linecount = 0;
 	if (argc == 1)
 	{
 		printf("Enter the filename you wish to read\n");
 		gets(fileName);
+		fp = fopen(fileName, "r");
 	}
 	else
 	{
-		fileName = argv[1];
-	}
+		fp = fopen(argv[1], "r");
 
-	fp = fopen(fileName, "r");
+	}
+	pthread_attr_init(&attr);
 	if (fp == NULL)
 	{
 		perror("Error while opening the file");
@@ -53,30 +55,31 @@ void main(int argc, char *argv[])
 	numbers = (int*)malloc(linecount * sizeof(int));
 	for (j = 0; j < linecount; j++)
 	{
-		numbers[j] = atoi(fgets(fp));
+		numbers[j] = atoi(fgets(line, 25, fp));
 	}
 	if (pthread_attr_getscope(&attr, &scope) != 0)
 		fprintf(stderr, "Unable to get scheduling scope\n");
 	else
 	{
 		if (scope == PTHREAD_SCOPE_PROCESS)
-			printf("PTHREAD_SCOPE_PROCESS");
+			printf("PTHREAD_SCOPE_PROCESS\n");
 		else if (scope == PTHREAD_SCOPE_SYSTEM)
-			printf("PTHREAD_SCOPE_SYSTEM");
+			printf("PTHREAD_SCOPE_SYSTEM\n");
 		else
 			fprintf(stderr, "Illegal scope value.\n");
 	}
 	pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
 	start = clock();
 	for (j = 0; j < NUM_THREADS; j++)
-		pthread_create(&tid[i], &attr, algorithm, NULL);
+		pthread_create(&tid[j], &attr, algorithm, NULL);
 	for (j = 0; j < NUM_THREADS; j++)
-		pthread_join(tid[i], NULL);
+		pthread_join(tid[j], NULL);
 	end = clock();
 	fclose(fp);
 
-	total = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("This took %f seconds to run\n", total);
+	actual = ((end - start)/ (double)CLOCKS_PER_SEC)*1000;
+	printf("This took %f milliseconds to run\n", actual);
+	return 0;
 
 }
 
