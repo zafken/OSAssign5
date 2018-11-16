@@ -14,15 +14,21 @@ Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
+#include <sys/time.h>
 
 /* User Defined Globals */
 int DATA_SET_SIZE = 10000;
+
+typedef struct {
+    int secs;
+    int usecs;
+} TimeDifference;
 
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
 void FillArray(int * [], FILE *);
 int Work(int);
+TimeDifference * Difference(struct timeval *, struct timeval *);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
@@ -31,8 +37,8 @@ int main(int argc, char **argv) {
 	int maxLoop = 1;
 	int i, j;
 	FILE * f;
-	clock_t start_t, end_t;
-	double elapsed;
+	TimeDifference * difference;
+    struct timeval tvStart, tvEnd;
 
 	/* Check for file */
 	if (argc < 2) {
@@ -54,16 +60,17 @@ int main(int argc, char **argv) {
 	FillArray(&values, f);
 
 	/* Do the work */
-	start_t = clock();
+	/* start_t = clock(); */
+	gettimeofday(&tvStart, NULL);
 	for (i = 0; i < maxLoop; i++) {
 		for (j = 0; j < DATA_SET_SIZE; j++)
 			result[j] = Work(values[j]);
 	}
 	
-	end_t = clock();
-	elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-
-	printf("This took %f seconds to run.\n", elapsed); 
+	gettimeofday(&tvEnd, NULL);
+	difference = Difference(&tvStart, &tvEnd);
+	printf("This took %d.%d seconds to run.\n", difference->secs, difference->usecs); 
+	
 	fclose(f);
 	return 0;
 }
@@ -109,4 +116,30 @@ Description:  Performs the actual work function to time
 ******************************************************************************/
 int Work(int x) {
 	return x == 0 ? 0 : 10;
+}
+
+/******************************************************************************
+*******************************************************************************
+   Function:  Difference
+*******************************************************************************
+Description:  Finds the time differece between two timevals
+     Credit:  https://cboard.cprogramming.com/cplusplus-programming/101085-how
+              -measure-time-multi-core-machines-pthreads.html
+*******************************************************************************
+******************************************************************************/
+TimeDifference * Difference(struct timeval * start, struct timeval * end) {
+    TimeDifference * diff = (TimeDifference *)malloc(sizeof(TimeDifference));
+    if (start->tv_sec == end->tv_sec) {
+        diff->secs = 0;
+        diff->usecs = end->tv_usec - start->tv_usec;
+    } else {
+        diff->usecs = 1000000 - start->tv_usec;
+        diff->secs = end->tv_sec - (start->tv_sec + 1);
+        diff->usecs += end->tv_usec;
+        if (diff->usecs >= 1000000) {
+            diff->usecs -= 1000000;
+            diff->secs += 1;
+        }
+    }
+    return diff;
 }
