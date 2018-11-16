@@ -17,7 +17,7 @@ Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 #include <sys/time.h>
 
 /* User Defined Globals */
-int DATA_SET_SIZE = 500;
+int DATA_SET_SIZE = 10000;
 
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 	f = OpenFile(argv[1]);
 	if (argc >= 3) maxLoop = atoi(argv[2]);
 
-	printf("Running with a data size 500 with %d loops.\n", maxLoop);
+	printf("Running with a data size 10000 with %d loops.\n", maxLoop);
 
 	/* Allocate Memory */
 	values = (int*)malloc(DATA_SET_SIZE * sizeof(int));

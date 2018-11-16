@@ -19,7 +19,7 @@ Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 #define NUM_THREADS 4
 
 /* User Defined Globals */
-int DATA_SET_SIZE = 500;
+int DATA_SET_SIZE = 10000;
 int *values = NULL;
 int *result = NULL;
 pthread_t tid[NUM_THREADS];
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 	f = OpenFile(argv[1]);
 	if (argc >= 3) maxLoop = atoi(argv[2]);
 
-	printf("Running data size 500 with %d loops.\n", maxLoop);
+	printf("Running data size 10000 with %d loops.\n", maxLoop);
 
 	/* Allocate Memory */
 	values = (int*)malloc(DATA_SET_SIZE * sizeof(int));
