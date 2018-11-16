@@ -33,7 +33,7 @@ int Work(int);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
-	int i, j, scope;
+	int j, scope;
 	FILE * f;
 	clock_t start_t, end_t;
 	double elapsed;
@@ -127,7 +127,7 @@ Description:  Performs the looping through data and calling work
 ******************************************************************************/
 void *Algorithm(void *param)
 {
-	int i, MIN, MAX;
+	int i, j, MIN, MAX;
 	if (pthread_self() == tid[0]) {
         MIN = 0;
 		MAX = DATA_SET_SIZE / 4;
@@ -146,8 +146,8 @@ void *Algorithm(void *param)
 	}
 	
     for (i = 0; i < maxLoop; i++) {
-        for (i = MIN; i < MAX; i++)
-            result[i] = Work(values[i]);
+        for (j = MIN; j < MAX; j++)
+            result[j] = Work(values[j]);
     }
 	pthread_exit(0);
 }
