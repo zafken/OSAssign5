@@ -25,23 +25,17 @@ int *result = NULL;
 pthread_t tid[NUM_THREADS];
 int maxLoop = 1;
 
-typedef struct {
-    int secs;
-    int usecs;
-} TimeDifference;
-
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
 void FillArray(int * [], FILE *);
 void * Algorithm(void *);
 int Work(int);
-TimeDifference * Difference(struct timeval *, struct timeval *);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
 	int j;
 	FILE * f;
-    TimeDifference * difference;
+    double difference;
     struct timeval tvStart, tvEnd;
     pthread_attr_t tattr;
     
@@ -76,8 +70,9 @@ int main(int argc, char **argv) {
         pthread_join(tid[j], NULL);
 
     gettimeofday(&tvEnd, NULL);
-    difference = Difference(&tvStart, &tvEnd);
-	printf("== %3d.%6d sec ==\n", difference->secs, difference->usecs); 
+    difference = (tvEnd.tv_sec - tvStart.tv_sec)*1000000;
+    difference = (difference + tvEnd.tv_usec - tvStart.tv_usec)/1000000;
+	printf("== %f sec ==\n", difference); 
 
 	fclose(f);
 	return 0;
@@ -158,30 +153,4 @@ Description:  Performs the actual work function to time
 ******************************************************************************/
 int Work(int x) {
 	return x == 0 ? 0 : 10;
-}
-
-/******************************************************************************
-*******************************************************************************
-   Function:  Difference
-*******************************************************************************
-Description:  Finds the time differece between two timevals
-     Credit:  https://cboard.cprogramming.com/cplusplus-programming/101085-how
-              -measure-time-multi-core-machines-pthreads.html
-*******************************************************************************
-******************************************************************************/
-TimeDifference * Difference(struct timeval * start, struct timeval * end) {
-    TimeDifference * diff = (TimeDifference *)malloc(sizeof(TimeDifference));
-    if (start->tv_sec == end->tv_sec) {
-        diff->secs = 0;
-        diff->usecs = end->tv_usec - start->tv_usec;
-    } else {
-        diff->usecs = 1000000 - start->tv_usec;
-        diff->secs = end->tv_sec - (start->tv_sec + 1);
-        diff->usecs += end->tv_usec;
-        if (diff->usecs >= 1000000) {
-            diff->usecs -= 1000000;
-            diff->secs += 1;
-        }
-    }
-    return diff;
 }
