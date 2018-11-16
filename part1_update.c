@@ -8,22 +8,23 @@
 Description:  
 *******************************************************************************
 ******************************************************************************/
+
+/* Preprocessor Directives */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
 
-/* Preprocessor Directives */
-
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
 int GetMaxSize(FILE *);
+void FillArray(int * [], int, FILE *);
 int Work(int);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
-	char intLine[25];
 	int *values = NULL;
+	int *result = NULL;
 	int maxSize = -1;
 	int i;
 	FILE * f;
@@ -43,11 +44,15 @@ int main(int argc, char **argv) {
 
 	/* Allocate Memory */
 	values = (int*)malloc(maxSize * sizeof(int));
+	result = (int*)malloc(maxSize * sizeof(int));
+
+	/* Fill array */
+	FillArray(&values, maxSize, f);
 
 	/* Do the work */
 	start_t = clock();
 	for (i = 0; i < maxSize; i++)
-		values[i] = Work(atoi(fgets(intLine, 25, f)));
+		result[i] = Work(values[i]);
 	end_t = clock();
 	elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
 
@@ -74,6 +79,13 @@ int GetMaxSize(FILE * f) {
 	}
 	rewind(f);	/* Set stream location to 0 */
 	return count;
+}
+
+void FillArray(int * values[], int maxSize, FILE * f) {
+	int i;
+	char intLine[25];
+	for(i = 0; i < maxSize; i++)
+		(*values)[i] = atoi(fgets(intLine, 25, f));
 }
 
 int Work(int x) {
