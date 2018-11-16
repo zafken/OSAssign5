@@ -29,13 +29,14 @@ int main(int argc, char *argv[])
 	{
 		printf("Enter the filename you wish to read\n");
 		gets(fileName);
+		fp = fopen(fileName, "r");
 	}
 	else
 	{
-		fileName = argv[1];
+		fp = fopen(argv[1], "r");
+
 	}
 
-	fp = fopen(fileName, "r");
 	if (fp == NULL)
 	{
 		perror("Error while opening the file");
@@ -65,7 +66,7 @@ int main(int argc, char *argv[])
 	fclose(fp);
 
 
-	actual = (double)(end - start) / CLOCKS_PER_SEC;
-	printf("This took %f seconds to run\n", actual);
+	actual = (double)(((end - start)*1000) / CLOCKS_PER_SEC);
+	printf("This took %f milliseconds to run\n", actual);
 	return 0;
 }
