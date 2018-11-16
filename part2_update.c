@@ -19,7 +19,7 @@ Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 #define NUM_THREADS 4
 
 /* User Defined Globals */
-int DATA_SET_SIZE = 10000;
+int DATA_SET_SIZE = 100;
 int *values = NULL;
 int *result = NULL;
 pthread_t tid[NUM_THREADS];
@@ -39,7 +39,7 @@ TimeDifference * Difference(struct timeval *, struct timeval *);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
-	int j, scope;
+	int j;
 	FILE * f;
     TimeDifference * difference;
     struct timeval tvStart, tvEnd;
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
 	f = OpenFile(argv[1]);
 	if (argc >= 3) maxLoop = atoi(argv[2]);
 
-	printf("Running with a data size 10,000 with %d loops.\n", maxLoop);
+	printf("Running data size 100 with %d loops.\n", maxLoop);
 
 	/* Allocate Memory */
 	values = (int*)malloc(DATA_SET_SIZE * sizeof(int));
@@ -66,16 +66,6 @@ int main(int argc, char **argv) {
 
     /* Handle Thread Scope */
     pthread_attr_init(&tattr);
-    if (pthread_attr_getscope(&tattr, &scope) != 0)
-		fprintf(stderr, "Unable to get scheduling scope\n");
-	else {
-		if (scope == PTHREAD_SCOPE_PROCESS)
-			printf("PTHREAD_SCOPE_PROCESS\n");
-		else if (scope == PTHREAD_SCOPE_SYSTEM)
-			printf("PTHREAD_SCOPE_SYSTEM\n");
-		else
-			fprintf(stderr, "Illegal scope value.\n");
-	}
 	pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
 
 	/* Do the thread work */
@@ -87,7 +77,7 @@ int main(int argc, char **argv) {
 
     gettimeofday(&tvEnd, NULL);
     difference = Difference(&tvStart, &tvEnd);
-	printf("This took %d.%d seconds to run.\n", difference->secs, difference->usecs); 
+	printf("== %3d.%6d sec ==\n", difference->secs, difference->usecs); 
 
 	fclose(f);
 	return 0;

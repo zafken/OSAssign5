@@ -17,7 +17,7 @@ Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 #include <sys/time.h>
 
 /* User Defined Globals */
-int DATA_SET_SIZE = 10000;
+int DATA_SET_SIZE = 100;
 
 typedef struct {
     int secs;
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 	f = OpenFile(argv[1]);
 	if (argc >= 3) maxLoop = atoi(argv[2]);
 
-	printf("Running with a data size 10,000 with %d loops.\n", maxLoop);
+	printf("Running with a data size 100 with %d loops.\n", maxLoop);
 
 	/* Allocate Memory */
 	values = (int*)malloc(DATA_SET_SIZE * sizeof(int));
@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
 	
 	gettimeofday(&tvEnd, NULL);
 	difference = Difference(&tvStart, &tvEnd);
-	printf("This took %d.%d seconds to run.\n", difference->secs, difference->usecs); 
-	
+	printf("== %3d.%6d sec ==\n", difference->secs, difference->usecs); 
+
 	fclose(f);
 	return 0;
 }
