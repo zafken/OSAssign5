@@ -1,11 +1,11 @@
 /******************************************************************************
 *******************************************************************************
        Name:  Andrew Serie & Sean Walter
- Assignment:  5 (Symmetric)
+ Assignment:  5 (Parallel)
      Course:  CSc 456 Operating Systems
  Instructor:  Gamradt
 *******************************************************************************
-Description:  Performs a simple calculation for timing symmetric programming
+Description:  Performs a simple calculation for timing parallel programming
 *******************************************************************************
 Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 ******************************************************************************/
@@ -14,25 +14,30 @@ Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <pthread.h>
 #include <time.h>
+#define NUM_THREADS 4
 
 /* User Defined Globals */
 int DATA_SET_SIZE = 10000;
+int *values = NULL;
+int *result = NULL;
+pthread_t tid[NUM_THREADS];
 
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
 void FillArray(int * [], FILE *);
+void * Algorithm(void *);
 int Work(int);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
-	int *values = NULL;
-	int *result = NULL;
 	int maxLoop = 1;
-	int i, j;
+	int i, j, scope;
 	FILE * f;
 	clock_t start_t, end_t;
 	double elapsed;
+    pthread_attr_t tattr;
 
 	/* Check for file */
 	if (argc < 2) {
@@ -53,13 +58,28 @@ int main(int argc, char **argv) {
 	/* Fill array */
 	FillArray(&values, f);
 
-	/* Do the work */
+    /* Handle Thread Scope */
+    pthread_attr_init(&tattr);
+    if (pthread_attr_getscope(&tattr, &scope) != 0)
+		fprintf(stderr, "Unable to get scheduling scope\n");
+	else {
+		if (scope == PTHREAD_SCOPE_PROCESS)
+			printf("PTHREAD_SCOPE_PROCESS\n");
+		else if (scope == PTHREAD_SCOPE_SYSTEM)
+			printf("PTHREAD_SCOPE_SYSTEM\n");
+		else
+			fprintf(stderr, "Illegal scope value.\n");
+	}
+	pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+
+	/* Do the thread work */
 	start_t = clock();
 	for (i = 0; i < maxLoop; i++) {
-		for (j = 0; j < DATA_SET_SIZE; j++)
-			result[j] = Work(values[j]);
-	}
-	
+        for (j = 0; j < NUM_THREADS; j++)
+		    pthread_create(&tid[j], &tattr, Algorithm, NULL);
+	    for (j = 0; j < NUM_THREADS; j++)
+		    pthread_join(tid[j], NULL);
+    }
 	end_t = clock();
 	elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
 
@@ -94,10 +114,42 @@ Description:  Fills array with data that was given from file
 ******************************************************************************/
 void FillArray(int * values[], FILE * f) {
 	int i;
-	char intLine[25];
+    char intLine[25];
 	for(i = 0; i < DATA_SET_SIZE; i++)
 		(*values)[i] = atoi(fgets(intLine, 25, f));
 	rewind(f);	/* Set stream location to 0 */
+}
+
+/******************************************************************************
+*******************************************************************************
+   Function:  Algorithm
+*******************************************************************************
+Description:  Performs the looping through data and calling work
+*******************************************************************************
+******************************************************************************/
+void *Algorithm(void *param)
+{
+	int i, MIN, MAX;
+	if (pthread_self() == tid[0]) {
+        MIN = 0;
+		MAX = DATA_SET_SIZE / 4;
+	}
+	else if(pthread_self() == tid[1]) {
+        MIN = (DATA_SET_SIZE / 4) + 1;
+		MAX = DATA_SET_SIZE / 2;
+	}
+	else if (pthread_self() == tid[2]) {
+        MIN = (DATA_SET_SIZE / 2) + 1;
+		MAX = (DATA_SET_SIZE * 3) / 4;
+	}
+	else {
+        MIN = ((DATA_SET_SIZE * 3) / 4) + 1;
+		MAX = DATA_SET_SIZE;
+	}
+		
+	for (i = MIN; i < MAX; i++)
+        result[i] = Work(values[i]);
+	pthread_exit(0);
 }
 
 /******************************************************************************
