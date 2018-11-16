@@ -23,6 +23,7 @@ int DATA_SET_SIZE = 10000;
 int *values = NULL;
 int *result = NULL;
 pthread_t tid[NUM_THREADS];
+int maxLoop = 1;
 
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
@@ -32,7 +33,6 @@ int Work(int);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
-	int maxLoop = 1;
 	int i, j, scope;
 	FILE * f;
 	clock_t start_t, end_t;
@@ -74,12 +74,10 @@ int main(int argc, char **argv) {
 
 	/* Do the thread work */
 	start_t = clock();
-	for (i = 0; i < maxLoop; i++) {
-        for (j = 0; j < NUM_THREADS; j++)
-		    pthread_create(&tid[j], &tattr, Algorithm, NULL);
-	    for (j = 0; j < NUM_THREADS; j++)
-		    pthread_join(tid[j], NULL);
-    }
+    for (j = 0; j < NUM_THREADS; j++)
+        pthread_create(&tid[j], &tattr, Algorithm, NULL);
+    for (j = 0; j < NUM_THREADS; j++)
+        pthread_join(tid[j], NULL);
 	end_t = clock();
 	elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
 
@@ -146,9 +144,11 @@ void *Algorithm(void *param)
         MIN = ((DATA_SET_SIZE * 3) / 4) + 1;
 		MAX = DATA_SET_SIZE;
 	}
-		
-	for (i = MIN; i < MAX; i++)
-        result[i] = Work(values[i]);
+	
+    for (i = 0; i < maxLoop; i++) {
+        for (i = MIN; i < MAX; i++)
+            result[i] = Work(values[i]);
+    }
 	pthread_exit(0);
 }
 
