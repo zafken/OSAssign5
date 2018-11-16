@@ -5,8 +5,9 @@
      Course:  CSc 456 Operating Systems
  Instructor:  Gamradt
 *******************************************************************************
-Description:  
+Description:  Performs a simple calculation for timing symmetric programming
 *******************************************************************************
+Usage:        ./a.out data.dat [times to loop 10,000 dataset]
 ******************************************************************************/
 
 /* Preprocessor Directives */
@@ -15,18 +16,20 @@ Description:
 #include <stdbool.h>
 #include <time.h>
 
+/* User Defined Globals */
+int DATA_SET_SIZE = 10000;
+
 /* Function Declarations/Prototypes */
 FILE * OpenFile(char *);
-int GetMaxSize(FILE *);
-void FillArray(int * [], int, FILE *);
+void FillArray(int * [], FILE *);
 int Work(int);
 
 /* Main Program Section */
 int main(int argc, char **argv) {
 	int *values = NULL;
 	int *result = NULL;
-	int maxSize = -1;
-	int i;
+	int maxLoop = 1;
+	int i, j;
 	FILE * f;
 	clock_t start_t, end_t;
 	double elapsed;
@@ -37,22 +40,26 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* Get File and maxSize */
+	/* Get File and maxLoop */
 	f = OpenFile(argv[1]);
-	if (argc < 3) maxSize = GetMaxSize(f);
-	else maxSize = atoi(argv[2]);
+	if (argc >= 3) maxLoop = atoi(argv[2]);
+
+	printf("Running with a data size 10,000 with %d loops.\n", maxLoop);
 
 	/* Allocate Memory */
-	values = (int*)malloc(maxSize * sizeof(int));
-	result = (int*)malloc(maxSize * sizeof(int));
+	values = (int*)malloc(DATA_SET_SIZE * sizeof(int));
+	result = (int*)malloc(DATA_SET_SIZE * sizeof(int));
 
 	/* Fill array */
-	FillArray(&values, maxSize, f);
+	FillArray(&values, f);
 
 	/* Do the work */
 	start_t = clock();
-	for (i = 0; i < maxSize; i++)
-		result[i] = Work(values[i]);
+	for (i = 0; i < maxLoop; i++) {
+		for (j = 0; j < DATA_SET_SIZE; j++)
+			result[j] = Work(values[j]);
+	}
+	
 	end_t = clock();
 	elapsed = (double)(end_t - start_t) / CLOCKS_PER_SEC;
 
@@ -71,21 +78,12 @@ FILE * OpenFile(char * filename) {
 	return f;
 }
 
-int GetMaxSize(FILE * f) {
-	char ch;
-	int count = 0;
-	while ((ch = fgetc(f)) != EOF) {
-		if (ch == '\n') count++;
-	}
-	rewind(f);	/* Set stream location to 0 */
-	return count;
-}
-
-void FillArray(int * values[], int maxSize, FILE * f) {
+void FillArray(int * values[], FILE * f) {
 	int i;
 	char intLine[25];
-	for(i = 0; i < maxSize; i++)
+	for(i = 0; i < DATA_SET_SIZE; i++)
 		(*values)[i] = atoi(fgets(intLine, 25, f));
+	rewind(f);	/* Set stream location to 0 */
 }
 
 int Work(int x) {
