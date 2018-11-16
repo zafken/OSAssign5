@@ -13,7 +13,7 @@ Description:
 #include <time.h>
 
 int *y = NULL;
-
+int *numbers = NULL;
 
 
 int main(int argc, char *argv[])
@@ -53,12 +53,17 @@ int main(int argc, char *argv[])
 	}
 
 	y = (int*)malloc(linecount * sizeof(int));
+	numbers = (int*)malloc(linecount * sizeof(int));
 	rewind(fp);
+	for (j = 0; j < linecount; j++)
+	{
+		numbers[j] = atoi(fgets(line, 25, fp));
+	}
 	start = clock();
 	for (j = 0; j < linecount; j++)
 	{
-		x = atoi(fgets(line, 25, fp));
-		if (x == 0)
+
+		if (numbers[j] == 0)
 			y[j] = 0;
 		else
 			y[j] = 10;
