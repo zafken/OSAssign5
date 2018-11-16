@@ -17,7 +17,8 @@ void *algorithm(void *param);
 int main(int argc, char *argv[])
 {
 	char line[25];
-	clock_t start, end, actual;
+	clock_t start, end;
+	double actual;
 	char fileName[25], ch;
 	FILE *fp;
 	int j = 0;
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
 	end = clock();
 	fclose(fp);
 
-	actual = (double)(((end - start)*1000) / CLOCKS_PER_SEC);
+	actual = ((end - start)/ (double)CLOCKS_PER_SEC)*1000;
 	printf("This took %f milliseconds to run\n", actual);
 	return 0;
 
